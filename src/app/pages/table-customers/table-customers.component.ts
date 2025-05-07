@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Customer } from '../../models/customers';
 import { CustomerService } from '../../services/customer.service';
 
@@ -16,6 +16,9 @@ import { TableModule } from 'primeng/table';
 
 import { FormsModule } from '@angular/forms';
 
+import { MenuItem } from 'primeng/api';
+import { Menu } from 'primeng/menu';
+
 @Component({
   selector: 'app-table-customer',
   templateUrl: './table-customers.component.html',
@@ -31,18 +34,27 @@ import { FormsModule } from '@angular/forms';
     // HttpClientModule,
     CommonModule,
     FormsModule,
+    Menu,
   ],
   providers: [CustomerService],
 })
 export class TableCustomersComponent {
   @ViewChild('dt2') dt2!: Table;
+  @ViewChild('container') container!: ElementRef<HTMLElement>;
   customers!: Customer[];
   representatives: any = [];
 
   fields: string[] = ['name', 'country.name', 'representative.name', 'company'];
   isLoading = false;
 
-  constructor(private customerService: CustomerService) {}
+  items: any = [];
+
+  constructor(private customerService: CustomerService) {
+    this.items = [
+      { label: 'New', icon: 'pi pi-plus' },
+      { label: 'Search', icon: 'pi pi-search' },
+    ];
+  }
 
   ngOnInit() {
     this.customerService
@@ -52,14 +64,6 @@ export class TableCustomersComponent {
     this.representatives = [
       { name: 'Amy Elsner', image: 'amyelsner.png' },
       { name: 'Anna Fali', image: 'annafali.png' },
-      { name: 'Asiya Javayant', image: 'asiyajavayant.png' },
-      { name: 'Bernardo Dominic', image: 'bernardodominic.png' },
-      { name: 'Elwin Sharvill', image: 'elwinsharvill.png' },
-      { name: 'Ioni Bowcher', image: 'ionibowcher.png' },
-      { name: 'Ivan Magalhaes', image: 'ivanmagalhaes.png' },
-      { name: 'Onyama Limba', image: 'onyamalimba.png' },
-      { name: 'Stephen Shaw', image: 'stephenshaw.png' },
-      { name: 'Xuxue Feng', image: 'xuxuefeng.png' },
     ];
   }
 
@@ -70,5 +74,56 @@ export class TableCustomersComponent {
 
   filterr(value: any) {
     console.log(value);
+  }
+
+  showModal = false;
+  stylePosition = {
+    left: 0,
+    top: 0,
+  };
+
+  handleClickOptions(e: Event) {
+    this.showModal = true;
+
+    const target = e.target as HTMLBodyElement;
+    const rect = target.getBoundingClientRect();
+    console.log(rect);
+    this.stylePosition.top = rect.top + rect.height + 10;
+    this.stylePosition.left = window.innerWidth - rect.left - rect.width / 2;
+
+    const event = (type: string, callback: any) => {
+      window.addEventListener(type, callback);
+      return () => {
+        window.removeEventListener(type, callback);
+      };
+    };
+
+    const disableEvents = () => {
+      // wheel();
+      rezise();
+      click();
+
+      this.showModal = false;
+    };
+
+    // const wheel = event('wheel', () => {
+    //   // disableEvents();
+    //   // console.log('scroll');
+    // });
+
+    const rezise = event('resize', () => {
+      disableEvents();
+      console.log('resize');
+    });
+
+    const click = event('click', (e: Event) => {
+      console.log(this.container);
+      if (
+        this.container &&
+        !this.container?.nativeElement.contains(e.target as Node)
+      ) {
+        disableEvents();
+      }
+    });
   }
 }

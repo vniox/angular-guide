@@ -1,72 +1,91 @@
-<p-table #dt2 [value]="customers" [paginator]="true" [rows]="5" [tableStyle]="{ 'min-width': '50rem' }"
-    [rowsPerPageOptions]="[5, 10, 20]" [globalFilterFields]="fields" [scrollable]="true" scrollHeight="flex"
-    [loading]="isLoading">
-    <ng-template #caption>
-        <div class="flex">
-            <p-iconfield iconPosition="left" class="ml-auto">
-                <p-inputicon>
-                    <i class="pi pi-search"></i>
-                </p-inputicon>
-                <input pInputText type="text" (input)="handeInputSearch($event, 'contains')"
-                    placeholder="Search keyword" />
-            </p-iconfield>
-        </div>
-    </ng-template>
-    <ng-template #header>
-        <tr>
-            <th style="width:25%">
-                <div class="flex items-center">
-                    Name
-                    <p-columnFilter type="text" field="representative.name" display="menu" />
+<div class="container-table">
+    <div class="table-header"></div>
+    <div class="container-table-data">
+        <p-table #dt2 [value]="customers" [paginator]="true" [rows]="5" [tableStyle]="{ 'min-width': '50rem' }"
+            [rowsPerPageOptions]="[5, 10, 20]" [globalFilterFields]="fields" [scrollable]="true" scrollHeight="flex"
+            [loading]="isLoading">
+            <ng-template #caption>
+                <div class="flex">
+                    <p-iconfield iconPosition="left" class="ml-auto">
+                        <p-inputicon>
+                            <i class="pi pi-search"></i>
+                        </p-inputicon>
+                        <input pInputText type="text" (input)="handeInputSearch($event, 'contains')"
+                            placeholder="Search keyword" />
+                    </p-iconfield>
                 </div>
-            </th>
-            <th style="width:25%">
-                <div class="flex items-center">
-                    Country
-                    <p-columnFilter type="text" field="country.name" display="menu" />
-                </div>
-            </th>
-            <th style="width:25%">Company</th>
-            <th style="width:25%; position: sticky; right: 0; backdrop-filter: blur(15px);">
-                <div class="flex items-center">
-                    Representative
-                    <p-columnFilter field="representative" matchMode="in" display="menu" [showMatchModes]="false"
-                        [showOperator]="false" [showAddButton]="false">
-                        <ng-template #filter let-value let-filter="filterCallback">
-                            <p-multiselect [ngModel]="value" [options]="representatives" placeholder="Any"
-                                (onChange)="filter($event.value)" optionLabel="name"
-                                [panelStyle]="{ minWidth: '16rem' }">
-                                <ng-template let-option #item>
-                                    <div class="flex items-center gap-2">
-                                        <img [alt]="option.label"
-                                            src="https://primefaces.org/cdn/primeng/images/demo/avatar/{{ option.image }}"
-                                            style="width: 32px" />
-                                        <span>{{ option.name }}</span>
-                                    </div>
+            </ng-template>
+            <ng-template #header>
+                <tr>
+                    <th style="width:25%">
+                        <div class="flex items-center">
+                            Name
+                            <p-columnFilter type="text" field="representative.name" display="menu" />
+                        </div>
+                    </th>
+                    <th style="width:25%">
+                        <div class="flex items-center">
+                            Country
+                            <p-columnFilter type="text" field="country.name" display="menu" />
+                        </div>
+                    </th>
+                    <th style="width:25%">Company</th>
+                    <th style="width:25%; position: sticky; right: 0; backdrop-filter: blur(15px);">
+                        <div class="flex items-center">
+                            Representative
+                            <p-columnFilter field="representative" matchMode="in" display="menu"
+                                [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
+                                <ng-template #filter let-value let-filter="filterCallback">
+                                    <p-multiselect [ngModel]="value" [options]="representatives" placeholder="Any"
+                                        (onChange)="filter($event.value)" optionLabel="name"
+                                        [panelStyle]="{ minWidth: '16rem' }">
+                                        <ng-template let-option #item>
+                                            <div class="flex items-center gap-2">
+                                                <img [alt]="option.label"
+                                                    src="https://primefaces.org/cdn/primeng/images/demo/avatar/{{ option.image }}"
+                                                    style="width: 32px" />
+                                                <span>{{ option.name }}</span>
+                                            </div>
+                                        </ng-template>
+                                    </p-multiselect>
                                 </ng-template>
-                            </p-multiselect>
-                        </ng-template>
-                    </p-columnFilter>
+                            </p-columnFilter>
+                        </div>
+                    </th>
+                    <th></th>
+                </tr>
+            </ng-template>
+            <ng-template #body let-customer>
+                <tr>
+                    <td>{{ customer.name }}</td>
+                    <td>{{ customer.country.name }}</td>
+                    <td>{{ customer.company }}</td>
+                    <td>{{ customer.representative.name
+                        }}
+                    </td>
+                    <td style="position: sticky; right: 0; backdrop-filter: blur(15px); ">
+                        <button (click)="handleClickOptions($event)" style="background: pink;">Opciones</button>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="4" class="text-center">No se encontraron resultados</td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="loadingbody">
+                <div class="text-center">
+                    <div>Cargando datos...</div>
                 </div>
-            </th>
-        </tr>
-    </ng-template>
-    <ng-template #body let-customer>
-        <tr>
-            <td>{{ customer.name }}</td>
-            <td>{{ customer.country.name }}</td>
-            <td>{{ customer.company }}</td>
-            <td style="position: sticky; right: 0; backdrop-filter: blur(15px);">{{ customer.representative.name }}</td>
-        </tr>
-    </ng-template>
-    <ng-template pTemplate="emptymessage">
-        <tr>
-            <td colspan="4" class="text-center">No se encontraron resultados</td>
-        </tr>
-    </ng-template>
-    <ng-template pTemplate="loadingbody">
-        <div class="text-center">
-            <div>Cargando datos...</div>
-        </div>
-    </ng-template>
-</p-table>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+@if(showModal) {
+<div class="modal">
+    <div #container class="model-container"
+        [style]="{ right : stylePosition.left + 'px', top : stylePosition.top + 'px' }">
+        <p-menu [model]="items" />
+    </div>
+</div>
+}
